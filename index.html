@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargo volume calculator</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Kalkulačka objemů nákladů</h1>
+
+        <h3>Náklad</h3>
+        <label>
+            Typ nákladu
+            <select @change="changeCargo($event.target.value)">
+                <option disabled selected value>- Vyber -</option>
+                <option value="450*185*200">Dodávka</option>
+                <option value="450*210*210">Plachtová dodávka</option>
+                <option value="650*248*255">Solo do 7,5t</option>
+                <option value="650*248*255">Solo do 12t</option>
+                <option value="1360*248*270">Standardní návěs- Truck</option>
+                <option value="1360*248*300">Mega trailer- Truck</option>
+            </select>
+        </label>
+        <br/>
+
+        <label>
+            Délka 1
+            <input type="number" v-model="d1" />
+        </label>
+        <label>
+            Šířka 1
+            <input type="number" v-model="s1" />
+        </label>
+        <label>
+            Výška 1
+            <input type="number" v-model="v1" />
+        </label>
+
+        <h3>Shipment</h3>
+        <label>
+            Délka 2
+            <input type="number" v-model="d2" />
+        </label>
+        <label>
+            Šířka 2
+            <input type="number" v-model="s2" />
+        </label>
+        <label>
+            Výška 2
+            <input type="number" v-model="v2" />
+        </label>
+
+        <h3>Výstup</h3>
+        <label>
+            Délka
+            <input type="number" :value="d" readonly/>
+        </label>
+        <label>
+            Šířka
+            <input type="number" :value="s" readonly/>
+        </label>
+        <label>
+            Výška
+            <input type="number" :value="v" readonly/>
+        </label>
+    </div>
+
+    <script type="module">
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const calculator = {
+            computed: {
+                d () {
+                    return this.d2 ? Math.round(this.d1, 2) / this.d2 : 0
+                },
+                s () {
+                    return this.s2 ? Math.round(this.s1, 2) / this.s2 : 0
+                },
+                v () {
+                    return this.v2 ? Math.round(this.v1, 2) / this.v2 : 0
+                }
+            },
+
+            data () {
+                return {
+                    d1: 0,
+                    s1: 0,
+                    v1: 0,
+                    d2: 0,
+                    s2: 0,
+                    v2: 0
+                }
+            },
+
+            methods: {
+                changeCargo (cargo) {
+                    const cargoDim = cargo.split('*')
+                    this.d1 = parseInt(cargoDim[0])
+                    this.s1 = parseInt(cargoDim[1])
+                    this.v1 = parseInt(cargoDim[2])
+                }
+            }
+        }
+        createApp(calculator).mount('#app')
+    </script>
+</body>
+</html>
