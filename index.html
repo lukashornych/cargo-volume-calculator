@@ -11,9 +11,9 @@
 
             <table>
                 <tr>
-                    <td>Typ nákladu</td>
+                    <td>Typ nákladu ('n')</td>
                     <td>
-                        <select @change="changeCargo($event.target.value)">
+                        <select id="cargoSelectRef" @change="changeCargo($event.target.value)">
                             <option disabled selected value>- Vyber -</option>
                             <option value="450*185*200">Dodávka</option>
                             <option value="450*210*210">Plachtová dodávka</option>
@@ -54,7 +54,7 @@
         <div>
             <h2>Převodník jednotek</h2>
 
-            <h3>Délky</h3>
+            <h3>Rozměry ('r')</h3>
 
             <table>
                 <tr>
@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <td>Palce (inch)</td>
-                    <td><input type="number" v-model="inch1" /></td>
+                    <td><input id="dimmensionRef" type="number" v-model="inch1" /></td>
                     <td><input type="number" v-model="inch2" /></td>
                     <td><input type="number" v-model="inch3" /></td>
                 </tr>
@@ -89,8 +89,17 @@
         </div>
     </div>
 
+    <script src="https://www.unpkg.com/keymaster@1.6.2/keymaster.js"></script>
     <script type="module">
         import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        // import keymaster from 'https://www.unpkg.com/keymaster@1.6.2/keymaster.js'
+
+        key('n', 'all', () => {
+            document.getElementById('cargoSelectRef').focus()
+        })
+        key('r', 'all', () => {
+            document.getElementById('dimmensionRef').focus()
+        })
 
         const calculator = {
             computed: {
@@ -105,13 +114,13 @@
                 },
 
                 cm1 () {
-                    return this.inch1 ? Math.round(this.inch1 * 2.54 * 100) / 100 : 0
+                    return this.inch1 ? Math.ceil(this.inch1 * 2.54 * 10) / 10 : 0
                 },
                 cm2 () {
-                    return this.inch2 ? Math.round(this.inch2 * 2.54 * 100) / 100 : 0
+                    return this.inch2 ? Math.ceil(this.inch2 * 2.54 * 10) / 10 : 0
                 },
                 cm3 () {
-                    return this.inch3 ? Math.round(this.inch3 * 2.54 * 100) / 100 : 0
+                    return this.inch3 ? Math.ceil(this.inch3 * 2.54 * 10) / 10 : 0
                 }
             },
 
