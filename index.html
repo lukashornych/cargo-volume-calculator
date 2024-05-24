@@ -6,63 +6,87 @@
 </head>
 <body>
     <div id="app">
-        <h1>Kalkulačka objemů nákladů</h1>
+        <div>
+            <h2>Kalkulačka objemů nákladů</h2>
 
-        <h3>Náklad</h3>
-        <label>
-            Typ nákladu
-            <select @change="changeCargo($event.target.value)">
-                <option disabled selected value>- Vyber -</option>
-                <option value="450*185*200">Dodávka</option>
-                <option value="450*210*210">Plachtová dodávka</option>
-                <option value="650*248*255">Solo do 7,5t</option>
-                <option value="650*248*255">Solo do 12t</option>
-                <option value="1360*248*270">Standardní návěs- Truck</option>
-                <option value="1360*248*300">Mega trailer- Truck</option>
-            </select>
-        </label>
-        <br/>
+            <table>
+                <tr>
+                    <td>Typ nákladu</td>
+                    <td>
+                        <select @change="changeCargo($event.target.value)">
+                            <option disabled selected value>- Vyber -</option>
+                            <option value="450*185*200">Dodávka</option>
+                            <option value="450*210*210">Plachtová dodávka</option>
+                            <option value="650*248*255">Solo do 7,5t</option>
+                            <option value="650*248*255">Solo do 12t</option>
+                            <option value="1360*248*270">Standardní návěs- Truck</option>
+                            <option value="1360*248*300">Mega trailer- Truck</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Délka</th>
+                    <th>Šířka</th>
+                    <th>Výška</th>
+                </tr>
+                <tr>
+                    <td>Náklad</td>
+                    <td><input type="number" v-model="d1" /></td>
+                    <td><input type="number" v-model="s1" /></td>
+                    <td><input type="number" v-model="v1" /></td>
+                </tr>
+                <tr>
+                    <td>Shipment</td>
+                    <td><input type="number" v-model="d2" /></td>
+                    <td><input type="number" v-model="s2" /></td>
+                    <td><input type="number" v-model="v2" /></td>
+                </tr>
+                <tr>
+                    <td>Výstup</td>
+                    <td><input readonly type="number" :value="d" readonly/></td>
+                    <td><input readonly type="number" :value="s" readonly/></td>
+                    <td><input readonly type="number" :value="v" readonly/></td>
+                </tr>
+            </table>
+        </div>
 
-        <label>
-            Délka 1
-            <input type="number" v-model="d1" />
-        </label>
-        <label>
-            Šířka 1
-            <input type="number" v-model="s1" />
-        </label>
-        <label>
-            Výška 1
-            <input type="number" v-model="v1" />
-        </label>
+        <div>
+            <h2>Převodník jednotek</h2>
 
-        <h3>Shipment</h3>
-        <label>
-            Délka 2
-            <input type="number" v-model="d2" />
-        </label>
-        <label>
-            Šířka 2
-            <input type="number" v-model="s2" />
-        </label>
-        <label>
-            Výška 2
-            <input type="number" v-model="v2" />
-        </label>
+            <h3>Délky</h3>
 
-        <h3>Výstup</h3>
-        <label>
-            Délka
-            <input type="number" :value="d" readonly/>
-        </label>
-        <label>
-            Šířka
-            <input type="number" :value="s" readonly/>
-        </label>
-        <label>
-            Výška
-            <input type="number" :value="v" readonly/>
-        </label>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Délka</th>
+                    <th>Šířka</th>
+                    <th>Výška</th>
+                </tr>
+                <tr>
+                    <td>Palce (inch)</td>
+                    <td><input type="number" v-model="inch1" /></td>
+                    <td><input type="number" v-model="inch2" /></td>
+                    <td><input type="number" v-model="inch3" /></td>
+                </tr>
+                <tr>
+                    <td>Cm</td>
+                    <td><input readonly type="number" v-model="cm1" /></td>
+                    <td><input readonly type="number" v-model="cm2" /></td>
+                    <td><input readonly type="number" v-model="cm3" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="3">
+                        <button @click="copyCm">
+                            Zkopírovat cm rozměry
+                        </button>
+                        <span><em> (zkopíruje rozměry v cm ve formátu "delka x sirka x vyska cm")</em></span>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
     </div>
 
     <script type="module">
@@ -71,13 +95,23 @@
         const calculator = {
             computed: {
                 d () {
-                    return this.d2 ? Math.round(this.d1, 2) / this.d2 : 0
+                    return this.d2 ? Math.round(this.d1 / this.d2 * 100) / 100 : 0
                 },
                 s () {
-                    return this.s2 ? Math.round(this.s1, 2) / this.s2 : 0
+                    return this.s2 ? Math.round(this.s1 / this.s2 * 100) / 100 : 0
                 },
                 v () {
-                    return this.v2 ? Math.round(this.v1, 2) / this.v2 : 0
+                    return this.v2 ? Math.round(this.v1 / this.v2 * 100) / 100 : 0
+                },
+
+                cm1 () {
+                    return this.inch1 ? Math.round(this.inch1 * 2.54 * 100) / 100 : 0
+                },
+                cm2 () {
+                    return this.inch2 ? Math.round(this.inch2 * 2.54 * 100) / 100 : 0
+                },
+                cm3 () {
+                    return this.inch3 ? Math.round(this.inch3 * 2.54 * 100) / 100 : 0
                 }
             },
 
@@ -88,7 +122,11 @@
                     v1: 0,
                     d2: 0,
                     s2: 0,
-                    v2: 0
+                    v2: 0,
+
+                    inch1: 0,
+                    inch2: 0,
+                    inch3: 0
                 }
             },
 
@@ -98,6 +136,10 @@
                     this.d1 = parseInt(cargoDim[0])
                     this.s1 = parseInt(cargoDim[1])
                     this.v1 = parseInt(cargoDim[2])
+                },
+
+                copyCm () {
+                    navigator.clipboard.writeText(`${this.cm1} x ${this.cm2} x ${this.cm3} Cm`)
                 }
             }
         }
