@@ -78,6 +78,11 @@
                 <tr>
                     <td></td>
                     <td colspan="3">
+                        <label for="roundCopy">
+                            <input id="roundCopy" v-model="roundCopy" type="checkbox" checked />
+                            Zaokrouklit zkopírované cm rozměry nahoru
+                        </label>
+                        <br/>
                         <button @click="copyCm">
                             Zkopírovat cm rozměry
                         </button>
@@ -135,7 +140,9 @@
 
                     inch1: 0,
                     inch2: 0,
-                    inch3: 0
+                    inch3: 0,
+
+                    roundCopy: true
                 }
             },
 
@@ -148,7 +155,10 @@
                 },
 
                 copyCm () {
-                    navigator.clipboard.writeText(`${this.cm1} x ${this.cm2} x ${this.cm3} Cm`)
+                    const cm1ToExport = this.roundCopy ? Math.ceil(this.cm1) : this.cm1
+                    const cm2ToExport = this.roundCopy ? Math.ceil(this.cm2) : this.cm2
+                    const cm3ToExport = this.roundCopy ? Math.ceil(this.cm3) : this.cm3
+                    navigator.clipboard.writeText(`${cm1ToExport} x ${cm2ToExport} x ${cm3ToExport} cm`)
                 }
             }
         }
