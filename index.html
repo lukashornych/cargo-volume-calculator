@@ -54,43 +54,84 @@
         <div>
             <h2>Převodník jednotek</h2>
 
-            <h3>Rozměry ('r')</h3>
-
             <table>
                 <tr>
+                    <th><h3>Rozměry ('r')</h3></th>
                     <th></th>
-                    <th>Délka</th>
-                    <th>Šířka</th>
-                    <th>Výška</th>
+                    <th><h3>Váha ('v')</h3></th>
                 </tr>
                 <tr>
-                    <td>Palce (inch)</td>
-                    <td><input id="dimmensionRef" type="number" v-model="inch1" /></td>
-                    <td><input type="number" v-model="inch2" /></td>
-                    <td><input type="number" v-model="inch3" /></td>
-                </tr>
-                <tr>
-                    <td>Cm</td>
-                    <td><input readonly type="number" v-model="cm1" /></td>
-                    <td><input readonly type="number" v-model="cm2" /></td>
-                    <td><input readonly type="number" v-model="cm3" /></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td colspan="3">
-                        <label for="roundCopy">
-                            <input id="roundCopy" v-model="roundCopy" type="checkbox" checked />
-                            Zaokrouklit zkopírované cm rozměry nahoru
-                        </label>
-                        <br/>
-                        <button @click="copyCm">
-                            Zkopírovat cm rozměry
-                        </button>
-                        <span><em> (zkopíruje rozměry v cm ve formátu "delka x sirka x vyska cm")</em></span>
+                    <td>
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>Délka</th>
+                                <th>Šířka</th>
+                                <th>Výška</th>
+                            </tr>
+                            <tr>
+                                <td>Palce (inch)</td>
+                                <td><input id="dimensionRef" type="number" v-model="inch1" /></td>
+                                <td><input type="number" v-model="inch2" /></td>
+                                <td><input type="number" v-model="inch3" /></td>
+                            </tr>
+                            <tr>
+                                <td>Cm</td>
+                                <td><input readonly type="number" v-model="cm1" /></td>
+                                <td><input readonly type="number" v-model="cm2" /></td>
+                                <td><input readonly type="number" v-model="cm3" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td colspan="3">
+                                    <label for="roundDimensionsCopy">
+                                        <input id="roundDimensionsCopy" v-model="roundDimensionsCopy" type="checkbox" checked />
+                                        Zaokrouklit zkopírované cm rozměry nahoru
+                                    </label>
+                                    <br/>
+                                    <button @click="copyCm">
+                                        Zkopírovat cm rozměry
+                                    </button>
+                                    <span><em> (zkopíruje rozměry v cm ve formátu "{delka} x {sirka} x {vyska} cm")</em></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td style="width: 5rem"></td>
+
+                    <td>
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>Váha</th>
+                            </tr>
+                            <tr>
+                                <td>Lbs</td>
+                                <td><input id="weightRef" type="number" v-model="lbs"/></td>
+                            </tr>
+                            <tr>
+                                <td>Kgs</td>
+                                <td><input readonly type="number" v-model="kgs"/></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <label for="roundWeightCopy">
+                                        <input id="roundWeightCopy" v-model="roundWeightCopy" type="checkbox" checked />
+                                        Zaokrouklit zkopírovanou váhu nahoru
+                                    </label>
+                                    <br/>
+                                    <button @click="copyWeightKgs">
+                                        Zkopírovat váhu v kgs
+                                    </button>
+                                    <span><em> (zkopíruje váhu v kgs ve formátu "{vaha} kgs")</em></span>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
-
         </div>
     </div>
 
@@ -99,11 +140,16 @@
         import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
         // import keymaster from 'https://www.unpkg.com/keymaster@1.6.2/keymaster.js'
 
+        const lbsInKgs = 0.4536
+
         key('n', 'all', () => {
             document.getElementById('cargoSelectRef').focus()
         })
         key('r', 'all', () => {
-            document.getElementById('dimmensionRef').focus()
+            document.getElementById('dimensionRef').focus()
+        })
+        key('v', 'all', () => {
+            document.getElementById('weightRef').focus()
         })
 
         const calculator = {
@@ -126,6 +172,10 @@
                 },
                 cm3 () {
                     return this.inch3 ? Math.ceil(this.inch3 * 2.54 * 10) / 10 : 0
+                },
+
+                kgs () {
+                    return Math.ceil(this.lbs * lbsInKgs * 10) / 10
                 }
             },
 
@@ -142,7 +192,11 @@
                     inch2: 0,
                     inch3: 0,
 
-                    roundCopy: true
+                    roundDimensionsCopy: true,
+
+                    lbs: 0,
+
+                    roundWeightCopy: true
                 }
             },
 
@@ -154,11 +208,16 @@
                     this.v1 = parseInt(cargoDim[2])
                 },
 
-                copyCm () {
-                    const cm1ToExport = this.roundCopy ? Math.ceil(this.cm1) : this.cm1
-                    const cm2ToExport = this.roundCopy ? Math.ceil(this.cm2) : this.cm2
-                    const cm3ToExport = this.roundCopy ? Math.ceil(this.cm3) : this.cm3
+                copyDimensionsCm () {
+                    const cm1ToExport = this.roundDimensionsCopy ? Math.ceil(this.cm1) : this.cm1
+                    const cm2ToExport = this.roundDimensionsCopy ? Math.ceil(this.cm2) : this.cm2
+                    const cm3ToExport = this.roundDimensionsCopy ? Math.ceil(this.cm3) : this.cm3
                     navigator.clipboard.writeText(`${cm1ToExport} x ${cm2ToExport} x ${cm3ToExport} cm`)
+                },
+
+                copyWeightKgs () {
+                    const kgsToExport = this.roundWeightCopy ? Math.ceil(this.kgs) : this.kgs
+                    navigator.clipboard.writeText(`${kgsToExport} kgs`)
                 }
             }
         }
